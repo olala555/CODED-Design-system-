@@ -1,0 +1,139 @@
+@import "tailwindcss";
+
+/* =========================================================
+   CODED Design System Platform — base tokens
+   Sourced from Figma library (node 78-2641)
+   ========================================================= */
+
+:root {
+  /* ---- CODED master ---- */
+  --coded-navy:           #14243F;
+  --coded-blue:           #004AA3;
+  --coded-grey-soft:      #D2D2D2;
+  --coded-black:          #1A1A1A;
+  --coded-white:          #FFFFFF;
+
+  /* ---- AI App Developer ---- */
+  --ai-light-sea-green:   #00B9B4;
+  --ai-stormy-teal:       #026678;
+  --ai-strong-cyan:       #16D7D1;
+  --ai-aquamarine:        #62FFE5;
+
+  /* ---- Unicode ---- */
+  --unicode-navy:         #14243F;
+  --unicode-orange:       #F46036;
+  --unicode-blue:         #0094CE;
+
+  /* ---- CODED Juniors ---- */
+  --juniors-red:          #FF3E3E;
+  --juniors-navy:         #14243F;
+  --juniors-winter-blue:  #0147BA;
+  --juniors-blue-bright:  #0161D4;
+  --juniors-yellow:       #FFCC49;
+  --juniors-green:        #31CC66;
+  --juniors-orange:       #FF7300;
+  --juniors-pink:         #FF77B9;
+
+  /* ---- Data Science Bootcamp ---- */
+  --ds-purple:            #C466EF;
+
+  /* ---- Kuwait Codes ---- */
+  --kw-deep-space:        #080827;
+  --kw-sky:               #00A0DF;
+  --kw-purple:            #7E31E0;
+  --kw-magenta:           #DF18C5;
+  --kw-cyan:              #2ED5F4;
+  --kw-orange:            #FAAC37;
+
+  /* ---- Academy-X ---- */
+  --ax-purple:            #7B28A2;
+  --ax-coral:             #FF7269;
+  --ax-mint:              #14C3BB;
+
+  /* ---- Cybersecurity Bootcamp ---- */
+  --cyb-navy:             #14243F;
+  --cyb-midnight:         #00112F;
+  --cyb-deep-space:       #080827;
+  --cyb-blue-team:        #2D4BFD;
+  --cyb-red-team:         #F72961;
+  --cyb-bg-gradient:      linear-gradient(180deg, #14243F 0%, #00112F 100%);
+
+  /* ---- Platform surface tokens (white + matte steel base) ---- */
+  --surface-0: #FAFBFC;          /* page background */
+  --surface-1: #FFFFFF;          /* primary cards */
+  --surface-2: #F4F5F8;          /* secondary surfaces */
+  --surface-3: rgba(255,255,255,0.65); /* frosted glass */
+  --border-soft: rgba(20, 36, 63, 0.07);
+  --border-hard: rgba(20, 36, 63, 0.14);
+  --text-primary: #14243F;
+  --text-secondary: #4B5567;
+  --text-tertiary: #8590A2;
+  --accent: var(--coded-blue);   /* cobalt accent */
+  --accent-soft: rgba(0, 74, 163, 0.08);
+  --accent-strong: #003278;
+
+  --shadow-soft: 0 1px 2px rgba(20, 36, 63, 0.04), 0 4px 16px rgba(20, 36, 63, 0.05);
+  --shadow-lift: 0 2px 4px rgba(20, 36, 63, 0.05), 0 14px 36px rgba(20, 36, 63, 0.08);
+}
+
+@theme inline {
+  --color-surface-0: var(--surface-0);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-border-soft: var(--border-soft);
+  --color-border-hard: var(--border-hard);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-accent: var(--accent);
+
+  --color-coded-navy: var(--coded-navy);
+  --color-coded-blue: var(--coded-blue);
+  --color-coded-grey-soft: var(--coded-grey-soft);
+
+  --color-ai-primary: var(--ai-light-sea-green);
+  --color-ai-accent: var(--ai-strong-cyan);
+  --color-juniors-red: var(--juniors-red);
+  --color-ds-purple: var(--ds-purple);
+  --color-cyb-blue-team: var(--cyb-blue-team);
+  --color-cyb-red-team: var(--cyb-red-team);
+
+  --font-sans: var(--font-dm-sans);
+  --font-arabic: var(--font-ibm-plex-arabic);
+  --font-mono: var(--font-jetbrains-mono);
+}
+
+html, body {
+  background: var(--surface-0);
+  color: var(--text-primary);
+  font-family: var(--font-dm-sans), "Inter", system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--coded-navy);
+}
+
+/* Frosted glass utility */
+.glass {
+  background: var(--surface-3);
+  backdrop-filter: saturate(140%) blur(18px);
+  -webkit-backdrop-filter: saturate(140%) blur(18px);
+  border: 1px solid var(--border-soft);
+}
+
+/* Subtle dot grid */
+.bg-dotgrid {
+  background-image: radial-gradient(circle, rgba(20,36,63,0.06) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+/* Quiet matte-steel gradient — used behind hero blocks */
+.bg-steel {
+  background:
+    radial-gradient(1200px 600px at 100% 0%, rgba(0,74,163,0.06), transparent 60%),
+    radial-gradient(800px 400px at 0% 100%, rgba(20,36,63,0.04), transparent 60%),
+    linear-gradient(180deg, #FFFFFF 0%, #F4F5F8 100%);
+}
