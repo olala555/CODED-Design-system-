@@ -130,6 +130,28 @@ html, body {
   background-size: 18px 18px;
 }
 
+/* Templates: print to PDF cleanly */
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  #template-print-target,
+  #template-print-target * {
+    visibility: visible !important;
+  }
+  #template-print-target {
+    position: fixed !important;
+    inset: 0 !important;
+    transform: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  @page {
+    size: auto;
+    margin: 0;
+  }
+}
+
 /* Quiet matte-steel gradient — used behind hero blocks */
 .bg-steel {
   background:
