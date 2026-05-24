@@ -2,7 +2,7 @@ import { Icon } from "./Icon";
 
 export function Topbar() {
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-[color:var(--border-soft)] bg-[color:var(--surface-1)]/80 backdrop-blur-md px-6 lg:px-10">
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-[color:var(--border-soft)] bg-[color:var(--surface-1)]/80 backdrop-blur-md px-6 lg:px-10 print:hidden">
       <div className="flex items-center gap-2 text-[12.5px] text-[color:var(--text-tertiary)]">
         <span>CODED Studio</span>
         <Icon name="chevron-right" size={12} />

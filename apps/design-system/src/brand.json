@@ -354,6 +354,33 @@
           "usage": "Main page / slide background."
         }
       ]
+    },
+    "hackathon": {
+      "label": "Hackathon",
+      "kind": "product",
+      "colors": [
+        {
+          "name": "Hackathon Purple",
+          "hex": "#6E34FF",
+          "rgb": "110, 52, 255",
+          "role": "primary",
+          "usage": "Primary brand color for Hackathon — logo accent and key elements."
+        },
+        {
+          "name": "Deep Navy",
+          "hex": "#091542",
+          "rgb": "9, 21, 66",
+          "role": "secondary",
+          "usage": "Dark background and logo base color."
+        },
+        {
+          "name": "White",
+          "hex": "#FFFFFF",
+          "rgb": "255, 255, 255",
+          "role": "neutral",
+          "usage": "Typography on dark backgrounds and the white logo variant."
+        }
+      ]
     }
   },
   "globalRoles": {

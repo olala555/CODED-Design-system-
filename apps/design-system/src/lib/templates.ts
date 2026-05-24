@@ -1,7 +1,7 @@
 import type { IconName } from "@/components/Icon";
 
 export type TemplateDef = {
-  id: "certificate" | "presentation";
+  id: "certificate" | "presentation" | "badge";
   name: string;
   tagline: string;
   format: string;
@@ -30,5 +30,15 @@ export const templates: TemplateDef[] = [
     aspect: "16 / 9",
     icon: "layout",
     defaultPaletteId: "cybersecurity-bootcamp",
+  },
+  {
+    id: "badge",
+    name: "ID Badge",
+    tagline:
+      "CODED staff badge with the C mark, radar rings, photo, name, and title — upload a photo and print as PDF.",
+    format: "ID · portrait",
+    aspect: "166.37 / 269.18",
+    icon: "image",
+    defaultPaletteId: "coded",
   },
 ];

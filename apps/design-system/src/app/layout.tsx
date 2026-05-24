@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Sans, IBM_Plex_Sans_Arabic, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { AppShell } from "@/components/AppShell";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -36,9 +35,7 @@ export default function RootLayout({
       lang="en"
       className={`${dmSans.variable} ${ibmPlexArabic.variable} ${jetbrainsMono.variable} antialiased`}
     >
-      <body className="min-h-screen">
-        <AppShell>{children}</AppShell>
-      </body>
+      <body className="min-h-screen" suppressHydrationWarning>{children}</body>
     </html>
   );
 }

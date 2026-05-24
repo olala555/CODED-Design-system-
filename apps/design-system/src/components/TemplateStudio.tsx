@@ -36,7 +36,8 @@ export function TemplateStudio({
   children: React.ReactNode;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
+  const [fitScale, setFitScale] = useState(1);
+  const [zoom, setZoom] = useState<"fit" | number>("fit");
 
   useEffect(() => {
     const el = containerRef.current;
@@ -46,16 +47,33 @@ export function TemplateStudio({
       const w = el.clientWidth - padding * 2;
       const h = el.clientHeight - padding * 2;
       if (w <= 0 || h <= 0) return;
-      setScale(Math.min(w / previewWidth, h / previewHeight, 1.2));
+      setFitScale(Math.min(w / previewWidth, h / previewHeight, 1.2));
     };
+    // Measure now and again across the next few frames — layout/CSS can settle
+    // after mount, and ResizeObserver is unreliable in some embedded contexts.
     update();
-    const ro = new ResizeObserver(update);
-    ro.observe(el);
-    return () => ro.disconnect();
+    const raf = requestAnimationFrame(update);
+    const timers = [setTimeout(update, 60), setTimeout(update, 250)];
+    window.addEventListener("resize", update);
+    let ro: ResizeObserver | undefined;
+    try {
+      ro = new ResizeObserver(update);
+      ro.observe(el);
+    } catch {
+      /* ResizeObserver unavailable — rAF/resize fallbacks cover it */
+    }
+    return () => {
+      cancelAnimationFrame(raf);
+      timers.forEach(clearTimeout);
+      window.removeEventListener("resize", update);
+      ro?.disconnect();
+    };
   }, [previewWidth, previewHeight]);
 
+  const effective = zoom === "fit" ? fitScale : zoom;
+
   return (
-    <div className="flex flex-col h-[calc(100vh-64px)]">
+    <div className="flex flex-col h-[calc(100dvh-64px)] max-h-[calc(100dvh-64px)] overflow-hidden">
       {/* Sub-header */}
       <div className="border-b border-[color:var(--border-soft)] bg-white px-6 lg:px-10 py-4 flex items-center justify-between gap-4">
         <div className="min-w-0">
@@ -79,6 +97,25 @@ export function TemplateStudio({
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center rounded-lg border border-[color:var(--border-soft)] bg-white p-0.5 print:hidden">
+            {([["fit", "Fit"], [0.5, "50%"], [1, "100%"]] as const).map(([val, label]) => {
+              const active = zoom === val;
+              return (
+                <button
+                  key={label}
+                  type="button"
+                  onClick={() => setZoom(val)}
+                  className={`rounded-md px-2.5 py-1 text-[11.5px] font-medium transition-colors ${
+                    active
+                      ? "bg-[color:var(--coded-navy)] text-white"
+                      : "text-[color:var(--text-secondary)] hover:bg-[color:var(--surface-2)]"
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
           <button
             type="button"
             onClick={() => window.print()}
@@ -109,21 +146,37 @@ export function TemplateStudio({
           </div>
         </aside>
 
-        {/* Preview canvas */}
+        {/* Preview canvas — scrollable; centers when it fits, scrolls when zoomed in */}
         <div
           ref={containerRef}
-          className={`flex-1 grid place-items-center overflow-hidden ${
+          className={`flex-1 flex overflow-auto ${
             previewBackdrop === "dark"
               ? "bg-[color:var(--coded-navy)]"
               : "bg-[color:var(--surface-2)] bg-dotgrid"
           }`}
         >
-          <div
-            className="origin-center transition-transform"
-            style={{ transform: `scale(${scale})` }}
-            id="template-print-target"
-          >
-            {children}
+          {/* margin:auto centers when smaller than the canvas, and keeps the
+              top-left reachable when larger (so scrolling shows everything) */}
+          <div style={{ margin: "auto", padding: 48 }}>
+            <div
+              style={{
+                width: previewWidth * effective,
+                height: previewHeight * effective,
+              }}
+              className="transition-[width,height]"
+            >
+              <div
+                id="template-print-target"
+                className="origin-top-left"
+                style={{
+                  width: previewWidth,
+                  height: previewHeight,
+                  transform: `scale(${effective})`,
+                }}
+              >
+                {children}
+              </div>
+            </div>
           </div>
         </div>
       </div>

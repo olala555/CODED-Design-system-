@@ -138,6 +138,8 @@ html, body {
   #template-print-target,
   #template-print-target * {
     visibility: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
   #template-print-target {
     position: fixed !important;
@@ -152,10 +154,123 @@ html, body {
   }
 }
 
+/* =========================================================
+   Brand book — printable / downloadable as PDF
+   Scoped with :has() so it never collides with the template
+   print rule above. Prints the full guide in natural,
+   multi-page flow with app chrome removed.
+   ========================================================= */
+@media print {
+  /* Re-show the brand book (overrides the template visibility reset) */
+  body:has(#brandbook-print) * {
+    visibility: visible !important;
+  }
+
+  /* App chrome (sidebar + topbar) is hidden via print:hidden on the
+     components themselves — see Sidebar.tsx / Topbar.tsx. */
+
+  /* Let the document flow across pages from the top-left */
+  body:has(#brandbook-print) main {
+    overflow: visible !important;
+  }
+  #brandbook-print {
+    margin: 0 !important;
+    padding: 28px 32px !important;
+    max-width: 100% !important;
+  }
+
+  /* Keep brand colors in the printed PDF */
+  #brandbook-print * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Avoid awkward breaks; the browser still splits oversized blocks */
+  #brandbook-print section,
+  #brandbook-print header {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
+
 /* Quiet matte-steel gradient — used behind hero blocks */
 .bg-steel {
   background:
     radial-gradient(1200px 600px at 100% 0%, rgba(0,74,163,0.06), transparent 60%),
     radial-gradient(800px 400px at 0% 100%, rgba(20,36,63,0.04), transparent 60%),
     linear-gradient(180deg, #FFFFFF 0%, #F4F5F8 100%);
+}
+
+/* =========================================================
+   Motion — subtle, brand-aware micro-interactions
+   ========================================================= */
+
+@keyframes coded-fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.coded-fade-up {
+  opacity: 0;
+  animation: coded-fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes coded-float-a {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(8px, -12px); }
+}
+@keyframes coded-float-b {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(-10px, 8px); }
+}
+@keyframes coded-float-c {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(6px, 10px); }
+}
+@keyframes coded-float-slow {
+  0%, 100% { transform: translateY(-50%) translateX(0); }
+  50%      { transform: translateY(-50%) translateX(-6px); }
+}
+@keyframes coded-float-slow-rev {
+  0%, 100% { transform: translateY(-50%) translateX(0); }
+  50%      { transform: translateY(-50%) translateX(6px); }
+}
+@keyframes coded-pulse-glow {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50%      { opacity: 1;   transform: scale(1.05); }
+}
+@keyframes coded-pulse-ring {
+  0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+  50%      { opacity: 1;   transform: translate(-50%, -50%) scale(1.04); }
+}
+
+.coded-float-a       { animation: coded-float-a 7s ease-in-out infinite; }
+.coded-float-b       { animation: coded-float-b 9s ease-in-out infinite; }
+.coded-float-c       { animation: coded-float-c 11s ease-in-out infinite; }
+.coded-float-slow    { animation: coded-float-slow 12s ease-in-out infinite; }
+.coded-float-slow-rev{ animation: coded-float-slow-rev 12s ease-in-out infinite; }
+.coded-pulse-glow    { animation: coded-pulse-glow 8s ease-in-out infinite; }
+.coded-pulse-ring    { animation: coded-pulse-ring 8s ease-in-out infinite; }
+
+@keyframes coded-ticker-slide {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.coded-ticker-slide {
+  animation: coded-ticker-slide 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .coded-fade-up,
+  .coded-float-a,
+  .coded-float-b,
+  .coded-float-c,
+  .coded-float-slow,
+  .coded-float-slow-rev,
+  .coded-pulse-glow,
+  .coded-pulse-ring,
+  .coded-ticker-slide {
+    animation: none !important;
+    opacity: 1 !important;
+  }
 }

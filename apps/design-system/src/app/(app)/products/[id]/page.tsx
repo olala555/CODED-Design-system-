@@ -13,5 +13,5 @@ export default async function ProductRedirect({
   const { id } = await params;
   const product = products.find((p) => p.id === id);
   if (!product) notFound();
-  redirect(`/brand-book/${product.paletteId}`);
+  redirect(`/brand-book/${product.id}`);
 }

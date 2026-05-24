@@ -7,9 +7,9 @@ type Message = { role: "user" | "assistant"; content: string };
 
 const STARTER_PROMPTS = [
   "What colors does the Cybersecurity program use?",
+  "Find the white CODED Juniors logo to download.",
   "Generate a brand prompt pack for CODED Juniors.",
   "Which font do we use across all programs?",
-  "What's the approved background for AI App Developer?",
 ];
 
 export function AssistantChat() {
@@ -173,13 +173,54 @@ function MessageBubble({ message, streaming }: { message: Message; streaming: bo
             : "bg-white border border-[color:var(--border-soft)] text-[color:var(--text-primary)] shadow-[var(--shadow-soft)]"
         }`}
       >
-        {message.content || (streaming ? <TypingDots /> : null)}
+        {message.content ? (
+          isUser ? message.content : <RichText text={message.content} />
+        ) : streaming ? (
+          <TypingDots />
+        ) : null}
         {streaming && message.content ? (
           <span className="inline-block w-1.5 h-4 ml-0.5 align-[-2px] bg-[color:var(--accent)] animate-pulse" />
         ) : null}
       </div>
     </div>
   );
+}
+
+// Renders assistant text, turning Markdown links [label](https://…) into
+// clickable download links. Everything else stays plain text (the parent
+// bubble keeps `whitespace-pre-wrap`, so newlines are preserved).
+function RichText({ text }: { text: string }) {
+  const linkRe = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+  const nodes: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  let key = 0;
+
+  while ((match = linkRe.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      nodes.push(text.slice(lastIndex, match.index));
+    }
+    const [, label, url] = match;
+    nodes.push(
+      <a
+        key={key++}
+        href={url}
+        download
+        target="_blank"
+        rel="noreferrer"
+        className="inline-flex items-center gap-1 rounded-lg border border-[color:var(--border-soft)] bg-[color:var(--surface-2)] px-2 py-0.5 font-medium text-[color:var(--accent)] no-underline hover:bg-white hover:text-[color:var(--accent-strong)]"
+      >
+        <Icon name="download" size={12} />
+        {label}
+      </a>,
+    );
+    lastIndex = match.index + match[0].length;
+  }
+  if (lastIndex < text.length) {
+    nodes.push(text.slice(lastIndex));
+  }
+
+  return <>{nodes}</>;
 }
 
 function TypingDots() {
