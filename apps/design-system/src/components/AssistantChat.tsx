@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { Icon } from "./Icon";
 
 type Message = { role: "user" | "assistant"; content: string };
@@ -167,9 +169,9 @@ function MessageBubble({ message, streaming }: { message: Message; streaming: bo
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div
-        className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-[13.5px] leading-relaxed whitespace-pre-wrap ${
+        className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-[13.5px] leading-relaxed ${
           isUser
-            ? "bg-[color:var(--coded-navy)] text-white"
+            ? "whitespace-pre-wrap bg-[color:var(--coded-navy)] text-white"
             : "bg-white border border-[color:var(--border-soft)] text-[color:var(--text-primary)] shadow-[var(--shadow-soft)]"
         }`}
       >
@@ -186,41 +188,109 @@ function MessageBubble({ message, streaming }: { message: Message; streaming: bo
   );
 }
 
-// Renders assistant text, turning Markdown links [label](https://…) into
-// clickable download links. Everything else stays plain text (the parent
-// bubble keeps `whitespace-pre-wrap`, so newlines are preserved).
+// Renders assistant text as Markdown (bold, lists, headings, code, tables…).
+// Links to http(s) assets render as clickable download buttons; everything
+// else is styled with Tailwind to fit the chat bubble.
 function RichText({ text }: { text: string }) {
-  const linkRe = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
-  const nodes: React.ReactNode[] = [];
-  let lastIndex = 0;
-  let match: RegExpExecArray | null;
-  let key = 0;
-
-  while ((match = linkRe.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      nodes.push(text.slice(lastIndex, match.index));
-    }
-    const [, label, url] = match;
-    nodes.push(
-      <a
-        key={key++}
-        href={url}
-        download
-        target="_blank"
-        rel="noreferrer"
-        className="inline-flex items-center gap-1 rounded-lg border border-[color:var(--border-soft)] bg-[color:var(--surface-2)] px-2 py-0.5 font-medium text-[color:var(--accent)] no-underline hover:bg-white hover:text-[color:var(--accent-strong)]"
+  return (
+    <div className="flex flex-col gap-2 [&_>*:first-child]:mt-0 [&_>*:last-child]:mb-0">
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={{
+          a: ({ href, children }) => {
+            const url = href ?? "";
+            const isDownload = /^https?:\/\//.test(url);
+            if (isDownload) {
+              return (
+                <a
+                  href={url}
+                  download
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1 rounded-lg border border-[color:var(--border-soft)] bg-[color:var(--surface-2)] px-2 py-0.5 font-medium text-[color:var(--accent)] no-underline hover:bg-white hover:text-[color:var(--accent-strong)]"
+                >
+                  <Icon name="download" size={12} />
+                  {children}
+                </a>
+              );
+            }
+            return (
+              <a
+                href={url}
+                target="_blank"
+                rel="noreferrer"
+                className="font-medium text-[color:var(--accent)] underline underline-offset-2 hover:text-[color:var(--accent-strong)]"
+              >
+                {children}
+              </a>
+            );
+          },
+          p: ({ children }) => <p className="m-0">{children}</p>,
+          ul: ({ children }) => (
+            <ul className="my-0 list-disc space-y-1 pl-5">{children}</ul>
+          ),
+          ol: ({ children }) => (
+            <ol className="my-0 list-decimal space-y-1 pl-5">{children}</ol>
+          ),
+          li: ({ children }) => <li className="pl-0.5">{children}</li>,
+          h1: ({ children }) => (
+            <h1 className="mt-1 mb-0 text-[15px] font-semibold text-[color:var(--coded-navy)]">
+              {children}
+            </h1>
+          ),
+          h2: ({ children }) => (
+            <h2 className="mt-1 mb-0 text-[14.5px] font-semibold text-[color:var(--coded-navy)]">
+              {children}
+            </h2>
+          ),
+          h3: ({ children }) => (
+            <h3 className="mt-1 mb-0 text-[13.5px] font-semibold text-[color:var(--coded-navy)]">
+              {children}
+            </h3>
+          ),
+          strong: ({ children }) => (
+            <strong className="font-semibold text-[color:var(--coded-navy)]">{children}</strong>
+          ),
+          code: ({ children, className }) => {
+            const isBlock = (className ?? "").includes("language-");
+            if (isBlock) {
+              return (
+                <code className="block overflow-x-auto rounded-lg bg-[color:var(--surface-2)] p-3 font-mono text-[12px]">
+                  {children}
+                </code>
+              );
+            }
+            return (
+              <code className="rounded bg-[color:var(--surface-2)] px-1 py-0.5 font-mono text-[12px]">
+                {children}
+              </code>
+            );
+          },
+          pre: ({ children }) => <pre className="m-0">{children}</pre>,
+          blockquote: ({ children }) => (
+            <blockquote className="border-l-2 border-[color:var(--border-soft)] pl-3 text-[color:var(--text-secondary)]">
+              {children}
+            </blockquote>
+          ),
+          table: ({ children }) => (
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse text-left text-[12.5px]">{children}</table>
+            </div>
+          ),
+          th: ({ children }) => (
+            <th className="border border-[color:var(--border-soft)] px-2 py-1 font-semibold">
+              {children}
+            </th>
+          ),
+          td: ({ children }) => (
+            <td className="border border-[color:var(--border-soft)] px-2 py-1">{children}</td>
+          ),
+        }}
       >
-        <Icon name="download" size={12} />
-        {label}
-      </a>,
-    );
-    lastIndex = match.index + match[0].length;
-  }
-  if (lastIndex < text.length) {
-    nodes.push(text.slice(lastIndex));
-  }
-
-  return <>{nodes}</>;
+        {text}
+      </ReactMarkdown>
+    </div>
+  );
 }
 
 function TypingDots() {
